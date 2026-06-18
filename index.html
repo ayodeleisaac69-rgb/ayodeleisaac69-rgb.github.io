@@ -353,6 +353,10 @@
         function toFinal() {
             document.getElementById('quiz-screen').style.display = 'none';
             document.getElementById('final-screen').style.display = 'flex';
+            
+            // Forces the song to start immediately at the chorus (52 seconds mark)
+            audio3.currentTime = 52; 
+            
             crossfade(currentAudio, audio3);
             currentAudio = audio3;
         }
