@@ -3,298 +3,495 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Mimah Archive // Core Ledger</title>
+    <title>The Ledger</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-dark: #070707;
-            --panel-bg: #111111;
-            --accent-gold: #c5a880;
-            --text-pure: #ffffff;
-            --text-dim: #999999;
-            --border-line: #1c1c1c;
+            --bg-color: #0d0d0d;
+            --text-main: #ffffff;
+            --text-muted: #a6a6a6;
+            --accent-wood: #8c6239;
+            --accent-wood-light: #b38f6d;
+            --card-bg: #141414;
         }
+
         * {
             box-sizing: border-box;
             margin: 0;
             padding: 0;
-            font-family: '-apple-system', BlinkMacSystemFont, 'SF Pro Display', Roboto, sans-serif;
-            -webkit-font-smoothing: antialiased;
         }
+
         body {
-            background-color: var(--bg-dark);
-            color: var(--text-pure);
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Montserrat', sans-serif;
+            overflow-x: hidden;
+            scroll-behavior: smooth;
+        }
+
+        .ambient-glow {
+            position: fixed;
+            width: 300px;
+            height: 300px;
+            background: radial-gradient(circle, rgba(140, 98, 57, 0.15) 0%, rgba(0,0,0,0) 70%);
+            top: 20%;
+            left: -100px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        .ambient-glow-right {
+            position: fixed;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(140, 98, 57, 0.1) 0%, rgba(0,0,0,0) 70%);
+            bottom: 10%;
+            right: -150px;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        section {
             min-height: 100vh;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             padding: 40px 20px;
+            position: relative;
+            z-index: 2;
         }
-        #portal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background-color: var(--bg-dark);
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 9999;
+
+        #activation-gate {
             text-align: center;
-            padding: 24px;
+            background-color: var(--bg-color);
+            z-index: 999;
         }
-        .portal-title {
-            font-size: 1.5rem;
-            font-weight: 700;
+
+        h1 {
+            font-family: 'Cinzel', serif;
+            font-size: 2.5rem;
             letter-spacing: 4px;
+            margin-bottom: 20px;
             text-transform: uppercase;
-            color: var(--accent-gold);
-            margin-bottom: 12px;
         }
-        .portal-sub {
-            color: var(--text-dim);
-            font-size: 0.8rem;
-            font-family: monospace;
-            margin-bottom: 45px;
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 1rem;
+            margin-bottom: 40px;
             letter-spacing: 1px;
-            line-height: 1.5;
+            max-width: 400px;
+            line-height: 1.6;
         }
-        .access-btn {
-            background-color: transparent;
-            color: var(--text-pure);
-            border: 1px solid var(--accent-gold);
-            padding: 18px 50px;
+
+        .action-btn {
+            background: transparent;
+            color: var(--text-main);
+            border: 1px solid var(--accent-wood);
+            padding: 15px 40px;
             font-size: 0.9rem;
-            font-weight: 600;
             letter-spacing: 2px;
             text-transform: uppercase;
             cursor: pointer;
-            border-radius: 4px;
             transition: all 0.4s ease;
         }
-        .access-btn:hover {
-            background-color: var(--accent-gold);
-            color: var(--bg-dark);
-            box-shadow: 0 0 25px rgba(197, 168, 128, 0.4);
+
+        .action-btn:hover {
+            background: var(--accent-wood);
+            box-shadow: 0 0 15px rgba(140, 98, 57, 0.4);
         }
-        .archive-wrapper {
+
+        #timeline-section {
             display: none;
-            max-width: 480px;
-            width: 100%;
-            animation: masterFadeIn 1.4s cubic-bezier(0.16, 1, 0.3, 1);
+            justify-content: flex-start;
         }
-        .archive-header {
-            border-left: 3px solid var(--accent-gold);
-            padding-left: 20px;
-            margin-bottom: 50px;
-        }
-        .archive-header h1 {
-            font-size: 1.9rem;
-            font-weight: 700;
-            letter-spacing: -0.5px;
-            text-transform: uppercase;
-        }
-        .archive-header p {
-            color: var(--text-dim);
-            font-size: 0.8rem;
-            margin-top: 6px;
-            font-family: monospace;
-            letter-spacing: 0.5px;
-        }
-        .chronology-flow {
-            display: flex;
-            flex-direction: column;
-            gap: 40px;
+
+        .timeline-container {
             position: relative;
+            max-width: 600px;
+            width: 100%;
+            margin-top: 40px;
         }
-        .chronology-flow::before {
+
+        .timeline-container::after {
             content: '';
             position: absolute;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent-wood), var(--accent-wood-light), transparent);
+            top: 0;
+            bottom: 0;
             left: 20px;
-            top: 20px;
-            bottom: 20px;
-            width: 1px;
-            background: linear-gradient(to bottom, var(--border-line), #333, var(--border-line));
+            margin-left: -1px;
         }
-        .node-card {
-            background-color: var(--panel-bg);
-            border: 1px solid var(--border-line);
-            border-radius: 16px;
-            padding: 30px;
+
+        .timeline-item {
+            padding: 10px 30px 40px 50px;
             position: relative;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.6s ease-out;
         }
-        .node-index {
-            font-size: 0.75rem;
-            color: var(--accent-gold);
-            font-family: monospace;
-            text-transform: uppercase;
-            margin-bottom: 16px;
-            display: block;
-            letter-spacing: 1.5px;
+
+        .timeline-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            right: calc(100% - 26px);
+            background-color: var(--bg-color);
+            border: 2px solid var(--accent-wood-light);
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .timeline-date {
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            color: var(--accent-wood-light);
+            letter-spacing: 2px;
+            margin-bottom: 5px;
+        }
+
+        .timeline-title {
+            font-size: 1.2rem;
             font-weight: 600;
+            margin-bottom: 15px;
+            letter-spacing: 1px;
         }
-        .node-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 14px;
-            letter-spacing: -0.2px;
-        }
-        .node-body {
-            font-size: 0.94rem;
-            color: var(--text-dim);
-            line-height: 1.75;
-            text-align: left;
-        }
-        .covenant-panel {
-            background: linear-gradient(180deg, #111111 0%, #17130e 100%);
-            border: 1px solid var(--accent-gold);
-            border-radius: 24px;
-            padding: 45px 30px;
-            text-align: center;
-            margin-top: 60px;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.6);
-        }
-        .covenant-panel h2 {
-            font-size: 1.6rem;
-            margin-bottom: 20px;
-            letter-spacing: -0.3px;
-        }
-        .covenant-panel p {
-            font-size: 0.96rem;
-            color: var(--text-dim);
-            line-height: 1.8;
-            margin-bottom: 40px;
-            text-align: justify;
-        }
-        .btn-structural-group {
-            display: flex;
-            gap: 16px;
-        }
-        .core-btn {
-            padding: 18px;
-            font-size: 0.95rem;
-            font-weight: 700;
-            border-radius: 35px;
-            border: none;
-            cursor: pointer;
+
+        .timeline-media {
             width: 100%;
+            max-height: 380px;
+            object-fit: cover;
+            border-radius: 4px;
+            border: 1px solid rgba(140, 98, 57, 0.2);
+            margin-bottom: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+        }
+
+        .timeline-body {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            line-height: 1.7;
+            font-weight: 300;
+        }
+
+        #quiz-section {
+            display: none;
+            background-color: #0a0a0a;
+            border-top: 1px solid rgba(140, 98, 57, 0.1);
+        }
+
+        .quiz-card {
+            background-color: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 40px 30px;
+            max-width: 500px;
+            width: 100%;
+            border-radius: 4px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        .quiz-header {
+            font-family: 'Cinzel', serif;
+            font-size: 1.1rem;
+            color: var(--accent-wood-light);
+            letter-spacing: 3px;
+            margin-bottom: 30px;
+            text-transform: uppercase;
+        }
+
+        .question-text {
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            line-height: 1.5;
+        }
+
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: var(--text-main);
+            padding: 14px 20px;
+            cursor: pointer;
+            font-family: 'Montserrat', sans-serif;
+            font-size: 0.95rem;
             transition: all 0.3s ease;
         }
-        .btn-primary-lock {
-            background-color: var(--text-pure);
-            color: var(--bg-dark);
+
+        .option-btn:hover {
+            border-color: var(--accent-wood-light);
+            background: rgba(140, 98, 57, 0.05);
         }
-        .btn-primary-lock:hover {
-            background-color: var(--accent-gold);
-            color: var(--text-pure);
+
+        .option-btn.incorrect {
+            border-color: #7a2222;
+            background: rgba(122, 34, 34, 0.1);
+            color: #ff9999;
+        }
+
+        #final-ledger-section {
+            display: none;
+            text-align: center;
+            background: radial-gradient(circle at center, #14110f 0%, #0d0d0d 100%);
+        }
+
+        .ledger-proposal {
+            max-width: 550px;
+            padding: 0 20px;
+        }
+
+        .ledger-proposal h2 {
+            font-family: 'Cinzel', serif;
+            font-size: 2rem;
+            letter-spacing: 3px;
+            margin-bottom: 25px;
+        }
+
+        .ledger-proposal p {
+            color: var(--text-muted);
+            font-size: 1.05rem;
+            line-height: 1.8;
+            margin-bottom: 35px;
+            font-weight: 300;
+        }
+
+        .handshake-btn {
+            background: var(--text-main);
+            color: var(--bg-color);
+            border: none;
+            padding: 18px 45px;
+            font-weight: 600;
+            font-size: 0.95rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.4s ease;
+        }
+
+        .handshake-btn:hover {
+            background: var(--accent-wood-light);
+            color: var(--text-main);
+            box-shadow: 0 8px 25px rgba(179, 143, 109, 0.4);
             transform: translateY(-2px);
         }
-        .btn-secondary-void {
-            background-color: transparent;
-            color: var(--text-dim);
-            border: 1px solid #2a2a2a;
-        }
-        @keyframes masterFadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
+
+        .next-section-trigger {
+            margin-top: 40px;
+            background: transparent;
+            border: none;
+            color: var(--accent-wood-light);
+            font-family: 'Cinzel', serif;
+            letter-spacing: 2px;
+            cursor: pointer;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            padding: 10px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Embedded Local Track Player Node -->
-    <audio id="bg-audio" loop>
-        <source src="Banky_W_-_Yes_No_CeeNaija.com_.mp3" type="audio/mpeg">
-    </audio>
+    <div class="ambient-glow"></div>
+    <div class="ambient-glow-right"></div>
 
-    <!-- Portal Entry Screen -->
-    <div id="portal-overlay">
-        <div class="portal-title">The Mimah Archive</div>
-        <div class="portal-sub">AUTHENTICATION REQUIRED // DESIGNATION: JEMIMAH JENNIFER AYUBA</div>
-        <button class="access-btn" onclick="decryptArchive()">Decrypt Ledger</button>
-    </div>
+    <!-- Exact matching audio file tags from repository -->
+    <audio id="track-moment1" src="Fireboy_DML_-_Need_You.mp3" loop></audio>
+    <audio id="track-moment2" src="Fireboy_DML_-_Like_I_Do.mp3" loop></audio>
+    <audio id="track-moment3" src="Banky_W_-_Yes_No_CeeNaija.com.mp3" loop></audio>
 
-    <!-- Decrypted Main Workspace -->
-    <div class="archive-wrapper" id="main-vault">
-        <div class="archive-header">
-            <h1>The Mimah Ledger</h1>
-            <p>RECORDS SYSTEM // ACCESS GRANTED // DESIGN ARCHIVE</p>
-        </div>
+    <!-- SECTION 0: GATE -->
+    <section id="activation-gate">
+        <h1>The Vault</h1>
+        <p class="subtitle">Please ensure your headphones are connected before establishing initialization.</p>
+        <button class="action-btn" onclick="initializeVibe()">Initialize Access</button>
+    </section>
 
-        <div class="chronology-flow">
-            <!-- Chapter 01 -->
-            <div class="node-card">
-                <span class="node-index">FILE 01 // MARCH 2026 // THE ICEBREAKER</span>
-                <div class="node-title">The "Jennifer" Discovery</div>
-                <div class="node-body">
-                    It began with a single spark on Snapchat. I saw your name and had to ask if it was truly Jennifer—because that is the exact name my own mother answers to. From that very first alignment, destiny already had its hands on the wheel. The next day, you posted about celebrating grace after being single for three years, stating firmly that you wouldn't dive into anything until you made money and found a stable man. I stepped into that gap immediately, playfully putting my name in that blank space, promising you that I would build that stability. We weren't just passing time; we were drawing blueprints.
-                </div>
+    <!-- SECTION 1: TIMELINE (Using Snapchat image file names verbatim) -->
+    <section id="timeline-section">
+        <h1 style="font-size: 1.8rem; text-align: center;">The Timeline</h1>
+        <p class="subtitle" style="text-align: center; margin-bottom: 20px;">Reflecting on how beautifully the layers aligned.</p>
+        
+        <div class="timeline-container">
+            <div class="timeline-item">
+                <div class="timeline-date">The Discovery</div>
+                <div class="timeline-title">The Coordinates Aligned</div>
+                <img src="Snapchat-176427044.jpg" alt="Memory 1" class="timeline-media">
+                <div class="timeline-body">From that initial unprompted trace on Snapchat up until this exact coordinate, looking back at the progression sequence is wild. A perfect structural alignment.</div>
             </div>
-
-            <!-- Chapter 02 -->
-            <div class="node-card">
-                <span class="node-index">FILE 02 // DETECTED ANOMALY // THE SNAP SAVER</span>
-                <div class="node-title">"Are you in love with me?"</div>
-                <div class="node-body">
-                    I kept saving your snaps, keeping pieces of your smile locked away in my phone because I couldn't bear to let them disappear after 24 hours. You caught me completely red-handed, texting me point-blank: <em>"Are you in love with me that you are saving all my snaps?"</em> My "Yes" was immediate, unfiltered, and absolute. It was the moment the walls came down completely.
-                </div>
+            <div class="timeline-item">
+                <div class="timeline-date">The Daily Rhythm</div>
+                <div class="timeline-title">A New Foundation</div>
+                <img src="Snapchat-63991720.jpg" alt="Memory 2" class="timeline-media">
+                <div class="timeline-body">Waking up to your texts daily completely configured a brand new cadence for my days. Navigating the distance became entirely seamless because your presence stayed constant.</div>
             </div>
-
-            <!-- Chapter 03 -->
-            <div class="node-card">
-                <span class="node-index">FILE 03 // APRIL 2026 // MIDNIGHT REALIGNMENT</span>
-                <div class="node-title">The Confession In The Dark</div>
-                <div class="node-body">
-                    In the deep, quiet hours of the night, when the rest of the world was fast asleep, we had those raw, romantic, middle-of-the-night conversations that change people forever. You looked past the fears of "making it first." You told me you were completely onto me, and beautifully confessed: <em>"I think I'm in love with you, Isaac."</em> I reminded you that it’s the journey itself I wanted—the journey of building from the ground up, hand-in-hand, to be with you.
-                </div>
-            </div>
-
-            <!-- Chapter 04 -->
-            <div class="node-card">
-                <span class="node-index">FILE 04 // THE CURRENT LEDGER // ALIGNMENT</span>
-                <div class="node-title">"I am yours"</div>
-                <div class="node-body">
-                    Our daily reality shifted into the most beautiful rhythm: waking up to each other's text messages, leaving long voice notes, planning future dates, and mentally traveling across the distance to visit one another. When you recently looked at me and stated clearly that you are mine, something clicked permanently. I knew waiting until we were physically face-to-face was a luxury we didn't need to waste time on. I am choosing clarity right now.
-                </div>
+            <div class="timeline-item">
+                <div class="timeline-date">The Safe Space</div>
+                <div class="timeline-title">The Core Integrity</div>
+                <img src="Snapchat-806711709.jpg" alt="Memory 3" class="timeline-media">
+                <div class="timeline-body">In a space where guards are normally held completely high, every protective perimeter dissolved entirely with you. A quiet sanctuary constructed out of absolute trust.</div>
             </div>
         </div>
 
-        <!-- Master Covenant Panel -->
-        <div class="covenant-panel">
-            <h2>Covenant Authorization</h2>
-            <p>
-                Jemimah Jennifer Ayuba, I have dated just twice in my entire life, and both times left me holding the weight of broken trust. But what I feel with you is entirely different. I trust you completely from this distance. You feel so good to be true, and tonight I am trusting my heart to make the absolute right decision. 
-                <br><br>
-                I don't want to hold back, and I don't want a shallow 'talking stage' anymore. I want to protect you, support your dreams—including every goal you have for your female nightwear business—and give you the soft life you deserve. This is an intentional, <strong>Date-to-Marry</strong> commitment. 
-                <br><br>
-                So, in the words of Banky W... <strong>Will you be my lover? Will you officially be my girlfriend?</strong>
-            </p>
-            <div class="btn-structural-group">
-                <button class="core-btn btn-primary-lock" onclick="lockCovenant()">Yes, Completely</button>
-                <button class="core-btn btn-secondary-void" onclick="alert('System Error: This option is structurally locked. You already belong to me. 😉')">Decline</button>
-            </div>
+        <button class="next-section-trigger" onclick="transitionToQuiz()">Proceed to Verification &rarr;</button>
+    </section>
+
+    <!-- SECTION 2: QUIZ -->
+    <section id="quiz-section">
+        <div class="quiz-card">
+            <div class="quiz-header" id="quiz-progress">Authentication: Step 1 of 3</div>
+            <div class="question-text" id="question-box">Loading security matrix...</div>
+            <div class="options-container" id="options-box"></div>
         </div>
-    </div>
+    </section>
+
+    <!-- SECTION 3: FINAL LEDGER (Using exact video filename) -->
+    <section id="final-ledger-section">
+        <div class="ledger-proposal">
+            <h2>The Next Architecture</h2>
+            <video class="timeline-media" autoplay loop muted playsinline style="max-height: 320px; margin-bottom: 25px;">
+                <source src="Snapchat-1400921699.mp4" type="video/mp4">
+            </video>
+            <p>Every blueprint has led up to this exact threshold. No hidden variables, no open parameters—just a clear, solid structure built exclusively for two. With the slate completely clean and the foundation fully inspected, there's only one parameter left to execute.</p>
+            <button class="handshake-btn" onclick="executeHandshake()">Execute Handshake</button>
+        </div>
+    </section>
 
     <script>
-        function decryptArchive() {
-            document.getElementById('portal-overlay').style.display = 'none';
-            document.getElementById('main-vault').style.display = 'block';
+        const track1 = document.getElementById('track-moment1');
+        const track2 = document.getElementById('track-moment2');
+        const track3 = document.getElementById('track-moment3');
+        let currentTrack = null;
+
+        const quizMatrix = [
+            {
+                question: "Where did this entire timeline actually begin?",
+                options: ["Instagram", "WhatsApp", "Snapchat"],
+                correct: 2
+            },
+            {
+                question: "What has officially become our favorite daily rhythm?",
+                options: ["Late night calls", "Waking up to each other's texts", "Sending random memes"],
+                correct: 1
+            },
+            {
+                question: "What happened to my walls the moment we started talking seriously?",
+                options: ["They got higher", "They completely disappeared", "They stayed the same"],
+                correct: 1
+            }
+        ];
+        let currentQuestionIndex = 0;
+
+        function fadeTracks(trackToFadeOut, trackToFadeIn) {
+            if (trackToFadeOut) {
+                let fadeOutInterval = setInterval(() => {
+                    if (trackToFadeOut.volume > 0.05) {
+                        trackToFadeOut.volume -= 0.05;
+                    } else {
+                        trackToFadeOut.pause();
+                        clearInterval(fadeOutInterval);
+                    }
+                }, 50);
+            }
+
+            if (trackToFadeIn) {
+                trackToFadeIn.volume = 0;
+                trackToFadeIn.play().catch(e => console.log("Playback engine active:", e));
+                let fadeInInterval = setInterval(() => {
+                    if (trackToFadeIn.volume < 0.45) {
+                        trackToFadeIn.volume += 0.05;
+                    } else {
+                        clearInterval(fadeInInterval);
+                    }
+                }, 100);
+            }
+        }
+
+        function initializeVibe() {
+            document.getElementById('activation-gate').style.display = 'none';
+            document.getElementById('timeline-section').style.display = 'flex';
             
-            var track = document.getElementById('bg-audio');
-            track.play().catch(function(error) {
-                console.log("Audio pipeline initialized.", error);
+            fadeTracks(null, track1);
+            currentTrack = track1;
+
+            setTimeout(() => {
+                const items = document.querySelectorAll('.timeline-item');
+                items.forEach((item, index) => {
+                    setTimeout(() => {
+                        item.classList.add('visible');
+                    }, index * 400);
+                });
+            }, 200);
+        }
+
+        function transitionToQuiz() {
+            document.getElementById('timeline-section').style.display = 'none';
+            document.getElementById('quiz-section').style.display = 'flex';
+            
+            fadeTracks(currentTrack, track2);
+            currentTrack = track2;
+            
+            loadQuizQuestion();
+        }
+
+        function loadQuizQuestion() {
+            const currentData = quizMatrix[currentQuestionIndex];
+            document.getElementById('quiz-progress').innerText = `Authentication: Step ${currentQuestionIndex + 1} of 3`;
+            document.getElementById('question-box').innerText = currentData.question;
+            
+            const optionsBox = document.getElementById('options-box');
+            optionsBox.innerHTML = '';
+
+            currentData.options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = option;
+                btn.onclick = () => verifyAnswer(index, btn);
+                optionsBox.appendChild(btn);
             });
         }
 
-        function lockCovenant() {
-            // Pre-drafted direct romantic link text payload
-            var textMessage = "I love you too, Ayodele Isaac. 🔒❤️ Yes, completely... I would be your girlfriend!";
-            var encodedMessage = encodeURIComponent(textMessage);
+        function verifyAnswer(selectedIndex, clickedBtn) {
+            const currentData = quizMatrix[currentQuestionIndex];
+            if (selectedIndex === currentData.correct) {
+                currentQuestionIndex++;
+                if (currentQuestionIndex < quizMatrix.length) {
+                    loadQuizQuestion();
+                } else {
+                    transitionToFinalLedger();
+                }
+            } else {
+                clickedBtn.classList.add('incorrect');
+                setTimeout(() => {
+                    clickedBtn.classList.remove('incorrect');
+                }, 800);
+            }
+        }
+
+        function transitionToFinalLedger() {
+            document.getElementById('quiz-section').style.display = 'none';
+            document.getElementById('final-ledger-section').style.display = 'flex';
             
-            // Forces breakout directly to your WhatsApp text screen
-            window.top.location.href = "https://api.whatsapp.com/send?phone=2347068918674&text=" + encodedMessage;
+            fadeTracks(currentTrack, track3);
+            currentTrack = track3;
+        }
+
+        function executeHandshake() {
+            const secureMessage = encodeURIComponent("Handshake Executed Successfully. Protocol Accepted. Clear Sky Ahead. 🔒❤️");
+            window.location.href = `https://wa.me/2349015154743?text=${secureMessage}`;
         }
     </script>
 </body>
