@@ -3,16 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Ledger</title>
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;600&display=swap" rel="stylesheet">
+    <title>The Archive</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400&display=swap" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0d0d0d;
-            --text-main: #ffffff;
-            --text-muted: #a6a6a6;
-            --accent-wood: #8c6239;
-            --accent-wood-light: #b38f6d;
-            --card-bg: #141414;
+            --bg: #0a0a0a;
+            --panel: #121212;
+            --accent: #b38f6d;
+            --text: #ffffff;
+            --muted: #7e7e7e;
         }
 
         * {
@@ -22,33 +21,11 @@
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
+            background-color: var(--bg);
+            color: var(--text);
             font-family: 'Montserrat', sans-serif;
             overflow-x: hidden;
             scroll-behavior: smooth;
-        }
-
-        .ambient-glow {
-            position: fixed;
-            width: 300px;
-            height: 300px;
-            background: radial-gradient(circle, rgba(140, 98, 57, 0.15) 0%, rgba(0,0,0,0) 70%);
-            top: 20%;
-            left: -100px;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .ambient-glow-right {
-            position: fixed;
-            width: 400px;
-            height: 400px;
-            background: radial-gradient(circle, rgba(140, 98, 57, 0.1) 0%, rgba(0,0,0,0) 70%);
-            bottom: 10%;
-            right: -150px;
-            z-index: 1;
-            pointer-events: none;
         }
 
         section {
@@ -57,441 +34,332 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            padding: 40px 20px;
-            position: relative;
-            z-index: 2;
+            padding: 30px 20px;
         }
 
-        #activation-gate {
+        #gate-screen {
             text-align: center;
-            background-color: var(--bg-color);
-            z-index: 999;
         }
 
         h1 {
             font-family: 'Cinzel', serif;
-            font-size: 2.5rem;
-            letter-spacing: 4px;
-            margin-bottom: 20px;
+            font-size: 2.2rem;
+            letter-spacing: 5px;
+            margin-bottom: 15px;
             text-transform: uppercase;
         }
 
-        p.subtitle {
-            color: var(--text-muted);
-            font-size: 1rem;
-            margin-bottom: 40px;
+        p.intro {
+            color: var(--muted);
+            font-size: 0.95rem;
+            margin-bottom: 35px;
             letter-spacing: 1px;
-            max-width: 400px;
+            max-width: 350px;
             line-height: 1.6;
         }
 
-        .action-btn {
+        .btn {
             background: transparent;
-            color: var(--text-main);
-            border: 1px solid var(--accent-wood);
-            padding: 15px 40px;
-            font-size: 0.9rem;
+            color: var(--text);
+            border: 1px solid var(--accent);
+            padding: 14px 35px;
+            font-size: 0.85rem;
             letter-spacing: 2px;
             text-transform: uppercase;
             cursor: pointer;
-            transition: all 0.4s ease;
+            transition: all 0.3s ease;
         }
 
-        .action-btn:hover {
-            background: var(--accent-wood);
-            box-shadow: 0 0 15px rgba(140, 98, 57, 0.4);
+        .btn:hover {
+            background: var(--accent);
+            box-shadow: 0 0 15px rgba(179, 143, 109, 0.3);
         }
 
-        #timeline-section {
+        #timeline-screen {
             display: none;
-            justify-content: flex-start;
-        }
-
-        .timeline-container {
-            position: relative;
-            max-width: 600px;
             width: 100%;
-            margin-top: 40px;
+            max-width: 550px;
         }
 
-        .timeline-container::after {
-            content: '';
-            position: absolute;
-            width: 2px;
-            background: linear-gradient(to bottom, var(--accent-wood), var(--accent-wood-light), transparent);
-            top: 0;
-            bottom: 0;
-            left: 20px;
-            margin-left: -1px;
+        .card {
+            background-color: var(--panel);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            width: 100%;
+            padding: 25px;
+            margin-bottom: 30px;
+            border-radius: 2px;
         }
 
-        .timeline-item {
-            padding: 10px 30px 40px 50px;
-            position: relative;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.6s ease-out;
-        }
-
-        .timeline-item.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .timeline-item::after {
-            content: '';
-            position: absolute;
-            width: 12px;
-            height: 12px;
-            right: calc(100% - 26px);
-            background-color: var(--bg-color);
-            border: 2px solid var(--accent-wood-light);
-            top: 15px;
-            border-radius: 50%;
-            z-index: 1;
-        }
-
-        .timeline-date {
+        .card-label {
             font-family: 'Cinzel', serif;
-            font-size: 0.85rem;
-            color: var(--accent-wood-light);
+            font-size: 0.8rem;
+            color: var(--accent);
             letter-spacing: 2px;
-            margin-bottom: 5px;
+            margin-bottom: 8px;
         }
 
-        .timeline-title {
-            font-size: 1.2rem;
-            font-weight: 600;
+        .card-title {
+            font-size: 1.15rem;
             margin-bottom: 15px;
             letter-spacing: 1px;
         }
 
-        .timeline-media {
+        .media-box {
             width: 100%;
-            max-height: 380px;
+            max-height: 350px;
             object-fit: cover;
-            border-radius: 4px;
-            border: 1px solid rgba(140, 98, 57, 0.2);
             margin-bottom: 15px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.4);
+            border: 1px solid rgba(179, 143, 109, 0.1);
         }
 
-        .timeline-body {
-            color: var(--text-muted);
-            font-size: 0.95rem;
-            line-height: 1.7;
-            font-weight: 300;
+        .card-text {
+            color: var(--muted);
+            font-size: 0.9rem;
+            line-height: 1.6;
         }
 
-        #quiz-section {
+        #quiz-screen {
             display: none;
-            background-color: #0a0a0a;
-            border-top: 1px solid rgba(140, 98, 57, 0.1);
-        }
-
-        .quiz-card {
-            background-color: var(--card-bg);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 40px 30px;
-            max-width: 500px;
             width: 100%;
-            border-radius: 4px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .quiz-box {
+            background-color: var(--panel);
+            padding: 35px 25px;
+            max-width: 450px;
+            width: 100%;
             text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.03);
         }
 
-        .quiz-header {
+        .quiz-title {
             font-family: 'Cinzel', serif;
-            font-size: 1.1rem;
-            color: var(--accent-wood-light);
+            font-size: 0.9rem;
+            color: var(--accent);
             letter-spacing: 3px;
-            margin-bottom: 30px;
-            text-transform: uppercase;
-        }
-
-        .question-text {
-            font-size: 1.1rem;
             margin-bottom: 25px;
-            line-height: 1.5;
         }
 
-        .options-container {
+        .question {
+            font-size: 1.05rem;
+            margin-bottom: 25px;
+        }
+
+        .options {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 12px;
         }
 
-        .option-btn {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            color: var(--text-main);
-            padding: 14px 20px;
+        .opt {
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            color: var(--text);
+            padding: 12px;
             cursor: pointer;
             font-family: 'Montserrat', sans-serif;
-            font-size: 0.95rem;
-            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            transition: all 0.2s;
         }
 
-        .option-btn:hover {
-            border-color: var(--accent-wood-light);
-            background: rgba(140, 98, 57, 0.05);
+        .opt:hover {
+            border-color: var(--accent);
+            background: rgba(179, 143, 109, 0.04);
         }
 
-        .option-btn.incorrect {
-            border-color: #7a2222;
-            background: rgba(122, 34, 34, 0.1);
-            color: #ff9999;
+        .opt.wrong {
+            border-color: #661c1c;
+            background: rgba(102, 28, 28, 0.1);
         }
 
-        #final-ledger-section {
+        #final-screen {
             display: none;
             text-align: center;
-            background: radial-gradient(circle at center, #14110f 0%, #0d0d0d 100%);
         }
 
-        .ledger-proposal {
-            max-width: 550px;
-            padding: 0 20px;
+        .final-box {
+            max-width: 500px;
+            padding: 0 15px;
         }
 
-        .ledger-proposal h2 {
-            font-family: 'Cinzel', serif;
-            font-size: 2rem;
-            letter-spacing: 3px;
-            margin-bottom: 25px;
-        }
-
-        .ledger-proposal p {
-            color: var(--text-muted);
-            font-size: 1.05rem;
-            line-height: 1.8;
-            margin-bottom: 35px;
-            font-weight: 300;
-        }
-
-        .handshake-btn {
-            background: var(--text-main);
-            color: var(--bg-color);
-            border: none;
-            padding: 18px 45px;
-            font-weight: 600;
+        .final-box p {
+            color: var(--muted);
             font-size: 0.95rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            cursor: pointer;
-            transition: all 0.4s ease;
+            line-height: 1.7;
+            margin-bottom: 30px;
         }
 
-        .handshake-btn:hover {
-            background: var(--accent-wood-light);
-            color: var(--text-main);
-            box-shadow: 0 8px 25px rgba(179, 143, 109, 0.4);
-            transform: translateY(-2px);
-        }
-
-        .next-section-trigger {
-            margin-top: 40px;
+        .trigger-next {
+            margin-top: 20px;
             background: transparent;
             border: none;
-            color: var(--accent-wood-light);
+            color: var(--accent);
             font-family: 'Cinzel', serif;
             letter-spacing: 2px;
             cursor: pointer;
-            text-transform: uppercase;
-            font-size: 0.85rem;
-            padding: 10px;
+            font-size: 0.8rem;
         }
     </style>
 </head>
 <body>
 
-    <div class="ambient-glow"></div>
-    <div class="ambient-glow-right"></div>
+    <!-- Target Audio Files matching your repository exactly -->
+    <audio id="m1" src="Fireboy_DML_-_Need_You.mp3" loop></audio>
+    <audio id="m2" src="Fireboy_DML_-_Like_I_Do.mp3" loop></audio>
+    <audio id="m3" src="Banky_W_-_Yes_No_CeeNaija.com_.mp3" loop></audio>
 
-    <!-- Exact matching audio file tags from repository -->
-    <audio id="track-moment1" src="Fireboy_DML_-_Need_You.mp3" loop></audio>
-    <audio id="track-moment2" src="Fireboy_DML_-_Like_I_Do.mp3" loop></audio>
-    <audio id="track-moment3" src="Banky_W_-_Yes_No_CeeNaija.com.mp3" loop></audio>
-
-    <!-- SECTION 0: GATE -->
-    <section id="activation-gate">
-        <h1>The Vault</h1>
-        <p class="subtitle">Please ensure your headphones are connected before establishing initialization.</p>
-        <button class="action-btn" onclick="initializeVibe()">Initialize Access</button>
+    <!-- SECTION 0: GATEWAY -->
+    <section id="gate-screen">
+        <h1>The Archive</h1>
+        <p class="intro">Turn up your volume and plug in your earphones before entering.</p>
+        <button class="btn" onclick="start()">Open Archive</button>
     </section>
 
-    <!-- SECTION 1: TIMELINE (Using Snapchat image file names verbatim) -->
-    <section id="timeline-section">
-        <h1 style="font-size: 1.8rem; text-align: center;">The Timeline</h1>
-        <p class="subtitle" style="text-align: center; margin-bottom: 20px;">Reflecting on how beautifully the layers aligned.</p>
+    <!-- SECTION 1: TIMELINE -->
+    <section id="timeline-screen">
+        <h1 style="font-size: 1.5rem; margin-bottom: 30px; text-align: center;">Chapters</h1>
         
-        <div class="timeline-container">
-            <div class="timeline-item">
-                <div class="timeline-date">The Discovery</div>
-                <div class="timeline-title">The Coordinates Aligned</div>
-                <img src="Snapchat-176427044.jpg" alt="Memory 1" class="timeline-media">
-                <div class="timeline-body">From that initial unprompted trace on Snapchat up until this exact coordinate, looking back at the progression sequence is wild. A perfect structural alignment.</div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-date">The Daily Rhythm</div>
-                <div class="timeline-title">A New Foundation</div>
-                <img src="Snapchat-63991720.jpg" alt="Memory 2" class="timeline-media">
-                <div class="timeline-body">Waking up to your texts daily completely configured a brand new cadence for my days. Navigating the distance became entirely seamless because your presence stayed constant.</div>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-date">The Safe Space</div>
-                <div class="timeline-title">The Core Integrity</div>
-                <img src="Snapchat-806711709.jpg" alt="Memory 3" class="timeline-media">
-                <div class="timeline-body">In a space where guards are normally held completely high, every protective perimeter dissolved entirely with you. A quiet sanctuary constructed out of absolute trust.</div>
-            </div>
+        <div class="card">
+            <div class="card-label">Chapter I</div>
+            <div class="card-title">Where it began</div>
+            <img src="Snapchat-176427044.jpg" class="media-box" alt="Memory One">
+            <div class="card-text">Looking back at how things started on Snapchat, it's amazing how a simple interaction grew into something so solid. Every single step lined up exactly the way it was meant to.</div>
         </div>
 
-        <button class="next-section-trigger" onclick="transitionToQuiz()">Proceed to Verification &rarr;</button>
+        <div class="card">
+            <div class="card-label">Chapter II</div>
+            <div class="card-title">The Daily Ritual</div>
+            <img src="Snapchat-63991720.jpg" class="media-box" alt="Memory Two">
+            <div class="card-text">Waking up to your messages has easily become the absolute best part of my routine. Distance doesn't feel heavy when you are consistently sharing the day.</div>
+        </div>
+
+        <div class="card">
+            <div class="card-label">Chapter III</div>
+            <div class="card-title">Unconditional Space</div>
+            <img src="Snapchat-806711709.jpg" class="media-box" alt="Memory Three">
+            <div class="card-text">It is rare to find a place where you can completely let your guard down without hesitation. With you, every wall just quietly disappeared, leaving total trust.</div>
+        </div>
+
+        <button class="trigger-next" onclick="toQuiz()">Continue to Verification &rarr;</button>
     </section>
 
     <!-- SECTION 2: QUIZ -->
-    <section id="quiz-section">
-        <div class="quiz-card">
-            <div class="quiz-header" id="quiz-progress">Authentication: Step 1 of 3</div>
-            <div class="question-text" id="question-box">Loading security matrix...</div>
-            <div class="options-container" id="options-box"></div>
+    <section id="quiz-screen">
+        <div class="quiz-box">
+            <div class="quiz-title" id="q-num">Question 1 of 3</div>
+            <div class="question" id="q-txt">Loading...</div>
+            <div class="options" id="q-opts"></div>
         </div>
     </section>
 
-    <!-- SECTION 3: FINAL LEDGER (Using exact video filename) -->
-    <section id="final-ledger-section">
-        <div class="ledger-proposal">
-            <h2>The Next Architecture</h2>
-            <video class="timeline-media" autoplay loop muted playsinline style="max-height: 320px; margin-bottom: 25px;">
+    <!-- SECTION 3: FINAL -->
+    <section id="final-screen">
+        <div class="final-box">
+            <h1>The Next Step</h1>
+            <video class="media-box" autoplay loop muted playsinline style="max-height: 300px; margin-top: 20px; margin-bottom: 20px;">
                 <source src="Snapchat-1400921699.mp4" type="video/mp4">
             </video>
-            <p>Every blueprint has led up to this exact threshold. No hidden variables, no open parameters—just a clear, solid structure built exclusively for two. With the slate completely clean and the foundation fully inspected, there's only one parameter left to execute.</p>
-            <button class="handshake-btn" onclick="executeHandshake()">Execute Handshake</button>
+            <p>Everything we've built up to this second point has a perfect, solid foundation. The slate is entirely clean, the future looks incredibly bright, and there is only one response left to complete.</p>
+            <button class="btn" onclick="finish()">Accept Protocol</button>
         </div>
     </section>
 
     <script>
-        const track1 = document.getElementById('track-moment1');
-        const track2 = document.getElementById('track-moment2');
-        const track3 = document.getElementById('track-moment3');
-        let currentTrack = null;
+        const audio1 = document.getElementById('m1');
+        const audio2 = document.getElementById('m2');
+        const audio3 = document.getElementById('m3');
+        let currentAudio = null;
 
-        const quizMatrix = [
+        const questions = [
             {
-                question: "Where did this entire timeline actually begin?",
-                options: ["Instagram", "WhatsApp", "Snapchat"],
-                correct: 2
+                q: "Where did this entire story officially begin?",
+                a: ["Instagram", "WhatsApp", "Snapchat"],
+                right: 2
             },
             {
-                question: "What has officially become our favorite daily rhythm?",
-                options: ["Late night calls", "Waking up to each other's texts", "Sending random memes"],
-                correct: 1
+                q: "What has become our favorite daily connection point?",
+                a: ["Late night calls", "Waking up to each other's text", "Exchanging old photos"],
+                right: 1
             },
             {
-                question: "What happened to my walls the moment we started talking seriously?",
-                options: ["They got higher", "They completely disappeared", "They stayed the same"],
-                correct: 1
+                q: "What happened to my walls once we got serious?",
+                a: ["They stayed up", "They completely disappeared", "They changed over time"],
+                right: 1
             }
         ];
-        let currentQuestionIndex = 0;
+        let qIndex = 0;
 
-        function fadeTracks(trackToFadeOut, trackToFadeIn) {
-            if (trackToFadeOut) {
-                let fadeOutInterval = setInterval(() => {
-                    if (trackToFadeOut.volume > 0.05) {
-                        trackToFadeOut.volume -= 0.05;
-                    } else {
-                        trackToFadeOut.pause();
-                        clearInterval(fadeOutInterval);
-                    }
+        function crossfade(outAudio, inAudio) {
+            if (outAudio) {
+                let volOut = setInterval(() => {
+                    if (outAudio.volume > 0.05) { outAudio.volume -= 0.05; }
+                    else { outAudio.pause(); clearInterval(volOut); }
                 }, 50);
             }
-
-            if (trackToFadeIn) {
-                trackToFadeIn.volume = 0;
-                trackToFadeIn.play().catch(e => console.log("Playback engine active:", e));
-                let fadeInInterval = setInterval(() => {
-                    if (trackToFadeIn.volume < 0.45) {
-                        trackToFadeIn.volume += 0.05;
-                    } else {
-                        clearInterval(fadeInInterval);
-                    }
+            if (inAudio) {
+                inAudio.volume = 0;
+                inAudio.play().catch(e => console.log(e));
+                let volIn = setInterval(() => {
+                    if (inAudio.volume < 0.4) { inAudio.volume += 0.05; }
+                    else { clearInterval(volIn); }
                 }, 100);
             }
         }
 
-        function initializeVibe() {
-            document.getElementById('activation-gate').style.display = 'none';
-            document.getElementById('timeline-section').style.display = 'flex';
-            
-            fadeTracks(null, track1);
-            currentTrack = track1;
-
-            setTimeout(() => {
-                const items = document.querySelectorAll('.timeline-item');
-                items.forEach((item, index) => {
-                    setTimeout(() => {
-                        item.classList.add('visible');
-                    }, index * 400);
-                });
-            }, 200);
+        function start() {
+            document.getElementById('gate-screen').style.display = 'none';
+            document.getElementById('timeline-screen').style.display = 'flex';
+            crossfade(null, audio1);
+            currentAudio = audio1;
         }
 
-        function transitionToQuiz() {
-            document.getElementById('timeline-section').style.display = 'none';
-            document.getElementById('quiz-section').style.display = 'flex';
-            
-            fadeTracks(currentTrack, track2);
-            currentTrack = track2;
-            
-            loadQuizQuestion();
+        function toQuiz() {
+            document.getElementById('timeline-screen').style.display = 'none';
+            document.getElementById('quiz-screen').style.display = 'flex';
+            crossfade(currentAudio, audio2);
+            currentAudio = audio2;
+            showQ();
         }
 
-        function loadQuizQuestion() {
-            const currentData = quizMatrix[currentQuestionIndex];
-            document.getElementById('quiz-progress').innerText = `Authentication: Step ${currentQuestionIndex + 1} of 3`;
-            document.getElementById('question-box').innerText = currentData.question;
+        function showQ() {
+            const data = questions[qIndex];
+            document.getElementById('q-num').innerText = `Question ${qIndex + 1} of 3`;
+            document.getElementById('q-txt').innerText = data.q;
             
-            const optionsBox = document.getElementById('options-box');
-            optionsBox.innerHTML = '';
+            const optContainer = document.getElementById('q-opts');
+            optContainer.innerHTML = '';
 
-            currentData.options.forEach((option, index) => {
-                const btn = document.createElement('button');
-                btn.className = 'option-btn';
-                btn.innerText = option;
-                btn.onclick = () => verifyAnswer(index, btn);
-                optionsBox.appendChild(btn);
+            data.a.forEach((optText, idx) => {
+                const button = document.createElement('button');
+                button.className = 'opt';
+                button.innerText = optText;
+                button.onclick = () => check(idx, button);
+                optContainer.appendChild(button);
             });
         }
 
-        function verifyAnswer(selectedIndex, clickedBtn) {
-            const currentData = quizMatrix[currentQuestionIndex];
-            if (selectedIndex === currentData.correct) {
-                currentQuestionIndex++;
-                if (currentQuestionIndex < quizMatrix.length) {
-                    loadQuizQuestion();
-                } else {
-                    transitionToFinalLedger();
-                }
+        function check(selected, btnElement) {
+            const data = questions[qIndex];
+            if (selected === data.right) {
+                qIndex++;
+                if (qIndex < questions.length) { showQ(); } 
+                else { toFinal(); }
             } else {
-                clickedBtn.classList.add('incorrect');
-                setTimeout(() => {
-                    clickedBtn.classList.remove('incorrect');
-                }, 800);
+                btnElement.classList.add('wrong');
+                setTimeout(() => btnElement.classList.remove('wrong'), 800);
             }
         }
 
-        function transitionToFinalLedger() {
-            document.getElementById('quiz-section').style.display = 'none';
-            document.getElementById('final-ledger-section').style.display = 'flex';
-            
-            fadeTracks(currentTrack, track3);
-            currentTrack = track3;
+        function toFinal() {
+            document.getElementById('quiz-screen').style.display = 'none';
+            document.getElementById('final-screen').style.display = 'flex';
+            crossfade(currentAudio, audio3);
+            currentAudio = audio3;
         }
 
-        function executeHandshake() {
-            const secureMessage = encodeURIComponent("Handshake Executed Successfully. Protocol Accepted. Clear Sky Ahead. 🔒❤️");
-            window.location.href = `https://wa.me/2349015154743?text=${secureMessage}`;
+        function finish() {
+            const txt = encodeURIComponent("Protocol Accepted. Everything is verified and ready. 🔒❤️");
+            window.location.href = `https://wa.me/2349015154743?text=${txt}`;
         }
     </script>
 </body>
